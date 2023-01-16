@@ -1,25 +1,207 @@
 <!DOCTYPE html> 
-<html> 
+<html lang="en"> 
     <head> 
         <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
 
-        <title>Example Student's HCDE 439 Physical Computing Page!</title> 
+        <title>Assignment 1</title> 
 
-        <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+        <link href="style/style.css" media="screen" rel="stylesheet" type="text/css" />
 
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Forum&family=Josefin+Sans:ital,wght@0,100;0,400;1,100;1,400&family=Raleway:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        <script src="/script/index.js"></script>
+        <script src="script/lightbox.js"></script>
     </head> 
     <body> 
+        <nav>
+            <h4 class="top-title">HCDE 439</h4>
+            <div class="nav-list">
+                <a class="nav-items" href="/index.html">Home</a>
+                <a class="nav-items" href="/assignment1.html">Assignment 1</a>
+                <a class="nav-items" href="/assignment2.html">Assignment 2</a>
+            </div>
+        </nav>
 
-        <div class="header">
-            <h1>Example Student's Assignment 1!</h1>
+        <div class="dark1">
+            <h2>Assignment 1 -- Blink</h2>
             <p>
-            <img src="red-panda.jpg" width=400></a>
+                Basic control of the Arduino and LEDs
             </p>
+        </div>
+
+        <div class="content bright1">
+            <div class="title">
+                <h3>Schematic</h3>
+                <div class="subtitle">Treasure Maps</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A1/A1_schem.svg" class="media" onclick='openLightbox("lightbox0");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox0");' id="lightbox0" style="display: none;">
+                <img src="static/A1/A1_schem.svg" class="media">
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A1/A1_bb.svg" class="media" onclick='openLightbox("lightbox1");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox1");' id="lightbox1" style="display: none;">
+                <img src="static/A1/A1_bb.svg" class="media">
+            </div>
             <p>
-            Here is all the documentation for assignment 1!
+                The images above are my schematic for assignment 1. There are 3 LEDs, their positive nodes are connected to pin 13, 12, and 11 of the Arduino.
+                Their negative nodes are connected together and connected with a 330 ohm, 220 ohm, and 100 ohm resistors in series. Then the resistor is connected to the ground on the Arduino board.
+            </p>
+            <h4>Why 330, 220, and 100?</h4>
+            <p>
+                From data sheet we know that LED have a working current of 20mA. When Arduino's pins are acting as power, they provide 5V power.
+                From the equation <code>I = V / R</code>, we can calculate that a 250 ohm resistor is needed as a bare minimum. In order to limit the current and make the LEDs safer, 
+                I added a 220 ohm, a 330 ohm, and a 100 ohm resistor to create a 650 ohm equivalent resistance.
+            </p>
+        </div>
+
+        <div class="content dark2">
+            <div class="title">
+                <h3>Circuit</h3>
+                <div class="subtitle">Above the blueprint</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A1/PXL_20230114_040926875.jpg" class="media" onclick='openLightbox("lightbox2");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox2");' id="lightbox2" style="display: none;">
+                <img src="static/A1/PXL_20230114_040926875.jpg" class="media">
+            </div>
+            <p>
+                The above image shows the actual Arduino circuit build on breadboard.
             </p>
         </div>
         
+        <div class="content bright2">
+            <div class="title">
+                <h3>Firmware</h3>
+                <div class="subtitle">Inside the chips</div>
+            </div>
+            <div class="code-wrapper">
+                <pre><code class="arduino">bool led11 = false;
+bool led12 = false;
+bool led13 = false;
+long prevMs[3];
+char delimiter = ',';
+int DEFAULT_DELAY = 1500;
+int delayArr[4] = {DEFAULT_DELAY, DEFAULT_DELAY, DEFAULT_DELAY, DEFAULT_DELAY};
+
+// Turn LED on or off based on the input delay, can blink while running other functions
+//	(int) ledPort - Port number that connect led port
+//  (int) delay - Milliseconds that
+bool updateLed(int ledPort, int delay, bool ledState, int delayOn = 1000) {
+    long currMs = millis();
+    long interval = currMs - prevMs[13 - ledPort];
+    int delayComm = delayOn;
+
+    if (ledState) {
+        delayComm = delay;
+    }
+
+    if (interval >= delayComm) {
+        ledState = !ledState;
+        digitalWrite(ledPort, ledState);
+        prevMs[13 - ledPort] = currMs;
+    }
+
+    return ledState;
+}
+
+void setup() {
+    // Open serial communication with computer
+    Serial.begin(115200);
+    pinMode(11, OUTPUT);
+    pinMode(12, OUTPUT);
+    pinMode(13, OUTPUT);
+}
+
+void loop() {
+    // If there's any text send by the computer, enter the "if" condition
+    if (Serial.available() > 0) {
+        Serial.println("Serial Available");
+        // Access and store the received string
+        String inputStr = Serial.readString();
+        String token = inputStr;
+        // Ready to extract delay time from string
+        int inputDelay = DEFAULT_DELAY;
+        int i = 0;
+
+        // while there are still delay times to be extracted ("," presents)
+        while (inputStr.indexOf(delimiter) >= 0) {   
+            // Extract from the start to the first ","
+            token = inputStr.substring(0, inputStr.indexOf(delimiter));
+            // Delete what's extracted and the ","
+            inputStr = inputStr.substring(inputStr.indexOf(delimiter) + 1);
+
+            // Delete any space
+            inputStr.trim();
+            // Convert to int 
+            inputDelay = token.toInt();
+            Serial.println(token);
+            // Store delay time into array
+            delayArr[i] = inputDelay;
+            //iterate
+            i++;
+            delay(1000);
+        }
+
+        Serial.println(inputStr);
+        inputDelay = inputStr.toInt();
+        delayArr[i] = inputDelay;
+    }
+
+    // led 13 is always blinking at 1000ms
+    // led 12 and 11 blinks at 1000ms at first, when string is received, arduino parses the first four numbers
+    // and use them as led on & off delay
+    led13 = updateLed(13, DEFAULT_DELAY, led13, DEFAULT_DELAY);
+    led12 = updateLed(12, delayArr[0], led12, delayArr[1]);
+    led11 = updateLed(11, delayArr[2], led11, delayArr[3]);
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="content dark1">
+            <div class="title">
+                <h3>Actual Operation</h3>
+                <div class="subtitle">Coming alive</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A1/ezgif-5-3b6e5db18b (1).gif" class="media" onclick='openLightbox("lightbox3");'></img>
+            </div>
+            <div class="lightbox-expand" id="lightbox3" onclick='closeLightbox("lightbox3");' style="display: none;">
+                <img src="static/A1/ezgif-5-3b6e5db18b (1).gif" class="media"></img>
+            </div>
+            <p>The above gif shows how this program run, when the user enters up to 4 numbers, <i>a1, a2, a3, a4</i>, the LEDs flash at different rates.
+                <ul>
+                    <li>
+                        LED 13 (top yellow LED) acts as a standard beacon, it always flashes at 1000 milliseconds
+                    </li>
+                    <li>
+                        LED 12 (middle red LED) lights up for a1 milliseconds and remains dark for a2 milliseconds
+                    </li>
+                    <li>
+                        LED 11 (lower yellow LED) lights up for a3 milliseconds and remains dark for a4 milliseconds
+                    </li>
+                </ul>
+            </p>
+        </div>
+
+        <button onclick="scrollToTop()" id="topBtn" title="Go to top">
+            <span class="material-icons">
+                arrow_upward
+            </span>
+        </button>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
     </body>
+    
 </html>
