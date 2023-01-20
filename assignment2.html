@@ -33,7 +33,150 @@
         <div class="dark1">
             <h2>Assignment 2 -- Fade</h2>
             <p>
-                Basic control of the Arduino and LEDs
+                Intermediate Control of the Arduino, LEDs, and Buttons
+            </p>
+        </div>
+
+        <div class="content bright1">
+            <div class="title">
+                <h3>Schematic</h3>
+                <div class="subtitle">Treasure Maps</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A2/A2_schem.svg" class="media" onclick='openLightbox("lightbox0");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox0");' id="lightbox0" style="display: none;">
+                <img src="static/A2/A2_schem.svg" class="media">
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A2/A2_bb.svg" class="media" onclick='openLightbox("lightbox1");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox1");' id="lightbox1" style="display: none;">
+                <img src="static/A2/A2_bb.svg" class="media">
+            </div>
+            <p>
+                The images above are my schematic for assignment 2. There are 2 LEDs, their positive nodes are connected to pin 13 and 11 of the Arduino.
+                Their negative nodes are connected together and connected with a 1000 ohm resistors in series. Then the resistor is connected to the ground on the Arduino board.
+                There's also a button which have one side connected to a 5V power source and pin 2 of the Arduino, and the other side connected to a 1k resistor, which then connects to the ground.
+            </p>
+            <h4>Why 1K?</h4>
+            <p>
+                From data sheet we know that LED have a working current of 20mA. When Arduino's pins are acting as power, they provide 5V power.
+                From the equation <code>I = V / R</code>, we can calculate that a 250 ohm resistor is needed as a bare minimum. In order to limit the current and make the LEDs safer, 
+                I chose a 1k resistor for the LEDs.
+            </p>
+            <h4>Hwo to Detect Button Press?</h4>
+            <p>
+                From the schematic we know that the button has one side connected to a 5V source, and the other side connected to a resistor, then to the ground. 
+                When the button is depressed, current flows from the source to the ground, resulting in voltage different between the resistor, 
+                so the button also have a voltage drop of 5V from ground. When the button is released, no current flows, so no voltage drops between the resistor, 
+                so there's no voltage drop from the button to ground. Pin 2 of the Arduino acts as a voltage meter, so it can measure the voltage drop from the button to the ground to see if it's depressed.
+            </p>
+            <h4>A Lighting Equation</h4>
+            <p>
+                When testing the code, I found that the value of <code>analogWrite</code> is not a linear relationship with the brightness of the LED. When <code>analogWrite</code> increases constantly, the LED's brightness would grow fast at first and then slow down.
+                Using the functions in the Arduino library, I developed a function that can produce a shifted cosine wave that have an input field and a output field both from 0 to 255. The screenshot below shows the graph of the function.
+            </p>
+            <code>f(x) = 255 / 2 * (1 - cos(x * PI / 255))</code>
+            <div class="lightbox-preview">
+                <img src="static/A2/Screenshot 2023-01-20 100721.png" class="media" onclick='openLightbox("lightbox2");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox2");' id="lightbox2" style="display: none;">
+                <img src="static/A2/Screenshot 2023-01-20 100721.png" class="media">
+            </div>
+        </div>
+
+        <div class="content dark2">
+            <div class="title">
+                <h3>Circuit</h3>
+                <div class="subtitle">Above the blueprint</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A2/6221779394553296298_121.jpg" class="media" onclick='openLightbox("lightbox2");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox2");' id="lightbox2" style="display: none;">
+                <img src="static/A2/6221779394553296298_121.jpg" class="media">
+            </div>
+            <p>
+                The above image shows the actual Arduino circuit build on breadboard.
+            </p>
+        </div>
+        
+        <div class="content bright2">
+            <div class="title">
+                <h3>Firmware</h3>
+                <div class="subtitle">Inside the chips</div>
+            </div>
+            <div class="code-wrapper">
+                <pre><code class="arduino">bool pin2State;
+int pin11Val = 0;
+
+void setup() {
+    pinMode(2, INPUT);
+    pinMode(13, OUTPUT);
+    pinMode(11, OUTPUT);
+    Serial.begin(115200);
+}
+
+void loop() {
+    // put your main code here, to run repeatedly:
+    //Print out status to the serial port
+    Serial.println("Reading Pin 2...");
+    //Read the voltage from pin 2, equal or above 5V results in a 1 and lower than 5V results in a 0.
+    pin2State = digitalRead(2);
+    Serial.println("Pin 2 reads: " + String(pin2State));
+
+    //Turn LED at pin 13 on if pin 2 reads 5V, turn LED off otherwise
+    digitalWrite(13, pin2State);
+
+    //If pin 2 reads 5V and pin11Val is not max, increase pin11Val
+    if (pin2State && pin11Val < 256) {
+        pin11Val++;
+    }
+    //If pin 2 reads lower than 5V and pin11Val is higher than 0, decrease pin11Val
+    else if (pin11Val > 0) {
+        pin11Val -= 5;
+    }
+
+    //Because Arduino cannot write negative value, we set pin11Val to 0 is it's negative
+    if (pin11Val < 0) {
+        pin11Val = 0;
+    }
+
+    //A small equation to smooth the lighting curve, graph on website
+    int pin11Conv = (255 / 2) * (1 - cos(pin11Val * PI / 255));
+    //Print out pin11Conv to the serial port
+    Serial.println(String(pin11Conv));
+    //Write pin11Conv's value to port 11's LED
+    analogWrite(11, pin11Conv);
+    //Print out pin11Val to the serial port
+    Serial.println(String(pin11Val));
+
+    delay(100);
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="content dark1">
+            <div class="title">
+                <h3>Actual Operation</h3>
+                <div class="subtitle">Coming alive</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A2/ezgif-1-4880eb8bd5.gif" class="media" onclick='openLightbox("lightbox3");'></img>
+            </div>
+            <div class="lightbox-expand" id="lightbox3" onclick='closeLightbox("lightbox3");' style="display: none;">
+                <img src="static/A2/ezgif-1-4880eb8bd5.gif" class="media"></img>
+            </div>
+            <p>The above gif shows how this program runs. There are two LEDs, LED 13 and LED 11.
+                <ul>
+                    <li>
+                        LED 13 (top green LED) acts as a button indicator, it turns on when the button is depressed and turns off when it's released.
+                    </li>
+                    <li>
+                        LED 11 (lower red LED) gradually lights up when the button is depressed, and goes out quickly when the button is released.
+                    </li>
+                </ul>
             </p>
         </div>
             
@@ -43,5 +186,7 @@
             </span>
         </button>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
     </body>
 </html>
