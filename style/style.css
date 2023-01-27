@@ -211,6 +211,12 @@ nav {
   margin-bottom: 32px;
 }
 
+.assignment img {
+  height: 300px;
+  width: 250px;
+  object-fit: cover;
+}
+
 .media {
   max-height: 90vh;
   max-width: 90vw;
