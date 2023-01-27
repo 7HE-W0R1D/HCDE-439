@@ -26,6 +26,7 @@
                 <a class="nav-items" href="index.html">Home</a>
                 <a class="nav-items" href="assignment1.html">Assignment 1</a>
                 <a class="nav-items" href="assignment2.html">Assignment 2</a>
+                <a class="nav-items" href="assignment3.html">Assignment 3</a>
             </div>
         </nav>
 
@@ -37,7 +38,7 @@
             </p>
         </div>
 
-        <div class="content bright1">
+        <div class="content bright1" id="schematic">
             <div class="title">
                 <h3>Schematic</h3>
                 <div class="subtitle">Treasure Maps</div>
@@ -72,7 +73,7 @@
                 so the button also have a voltage drop of 5V from ground. When the button is released, no current flows, so no voltage drops between the resistor, 
                 so there's no voltage drop from the button to ground. Pin 2 of the Arduino acts as a voltage meter, so it can measure the voltage drop from the button to the ground to see if it's depressed.
             </p>
-            <h4>A Lighting Equation</h4>
+            <h4 id="light-eq">A Lighting Equation</h4>
             <p>
                 When testing the code, I found that the value of <code>analogWrite</code> is not a linear relationship with the brightness of the LED. When <code>analogWrite</code> increases constantly, the LED's brightness would grow fast at first and then slow down.
                 Using the functions in the Arduino library, I developed a function that can produce a shifted cosine wave that have an input field and a output field both from 0 to 255. The screenshot below shows the graph of the function.
@@ -86,7 +87,7 @@
             </div>
         </div>
 
-        <div class="content dark2">
+        <div class="content dark2" id="circuit">
             <div class="title">
                 <h3>Circuit</h3>
                 <div class="subtitle">Above the blueprint</div>
@@ -102,7 +103,7 @@
             </p>
         </div>
         
-        <div class="content bright2">
+        <div class="content bright2" id="firmware">
             <div class="title">
                 <h3>Firmware</h3>
                 <div class="subtitle">Inside the chips</div>
@@ -157,7 +158,7 @@ void loop() {
             </div>
         </div>
 
-        <div class="content dark1">
+        <div class="content dark1" id="actual-operation">
             <div class="title">
                 <h3>Actual Operation</h3>
                 <div class="subtitle">Coming alive</div>
