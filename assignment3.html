@@ -4,7 +4,7 @@
         <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
 
-        <title>Assignment 2</title> 
+        <title>Assignment 3</title> 
 
         <link href="style/style.css" media="screen" rel="stylesheet" type="text/css" />
 
@@ -26,14 +26,15 @@
                 <a class="nav-items" href="index.html">Home</a>
                 <a class="nav-items" href="assignment1.html">Assignment 1</a>
                 <a class="nav-items" href="assignment2.html">Assignment 2</a>
+                <a class="nav-items" href="assignment3.html">Assignment 3</a>
             </div>
         </nav>
 
                 
         <div class="dark1">
-            <h2>Assignment 2 -- Fade</h2>
+            <h2>Assignment 3 -- Input Output</h2>
             <p>
-                Intermediate Control of the Arduino, LEDs, and Buttons
+                Intermediate Control of LEDs, and basic analog input operation.
             </p>
         </div>
 
@@ -43,21 +44,21 @@
                 <div class="subtitle">Treasure Maps</div>
             </div>
             <div class="lightbox-preview">
-                <img src="static/A2/A2_schem.svg" class="media" onclick='openLightbox("lightbox0");'>
+                <img src="static/A3/A3_schem.svg" class="media" onclick='openLightbox("lightbox0");'>
             </div>
             <div class="lightbox-expand" onclick='closeLightbox("lightbox0");' id="lightbox0" style="display: none;">
-                <img src="static/A2/A2_schem.svg" class="media">
+                <img src="static/A3/A3_schem.svg" class="media">
             </div>
             <div class="lightbox-preview">
-                <img src="static/A2/A2_bb.svg" class="media" onclick='openLightbox("lightbox1");'>
+                <img src="static/A3/A3_bb.svg" class="media" onclick='openLightbox("lightbox1");'>
             </div>
             <div class="lightbox-expand" onclick='closeLightbox("lightbox1");' id="lightbox1" style="display: none;">
-                <img src="static/A2/A2_bb.svg" class="media">
+                <img src="static/A3/A3_bb.svg" class="media">
             </div>
             <p>
-                The images above are my schematic for assignment 2. There are 2 LEDs, their positive nodes are connected to pin 13 and 11 of the Arduino.
+                The images above are my schematic for assignment 3. There are 2 LEDs, their positive nodes are connected to pin 13 and 11 of the Arduino.
                 Their negative nodes are connected together and connected with a 1000 ohm resistors in series. Then the resistor is connected to the ground on the Arduino board.
-                There's also a button which have one side connected to a 5V power source and pin 2 of the Arduino, and the other side connected to a 1k resistor, which then connects to the ground.
+                There's also a photocell which have one side connected to a 5V power source the Arduino, and the other side connected to pin A0 of the Arduino and a 1k resistor, which then connects to the ground.
             </p>
             <h4>Why 1K?</h4>
             <p>
