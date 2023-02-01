@@ -136,6 +136,7 @@ if (pinA0State != pinA0StatePrev)
 bool pinA0StatePrev;
 int pinA0Val;
 int pin11Val = 0;
+int DARK_THRESHOLD = 10;
 
 void setup() {
     pinMode(13, OUTPUT);
@@ -153,7 +154,7 @@ void loop() {
     Serial.println("Pin A0 reads: " + String(pinA0Val));
     
     //Set pinA0State to TRUE if pin A0 reads below 70, FALSE otherwise.
-    pinA0State = (pinA0Val < 70);
+    pinA0State = (pinA0Val < DARK_THRESHOLD);
 
     //If pinA0 has a different state as the stored, previous one
     if (pinA0State != pinA0StatePrev)
@@ -161,7 +162,7 @@ void loop() {
         //Wait 1 second to debounce
         delay(1000);
         //Read pin A0 again
-        pinA0State = (analogRead(A0) < 70);
+        pinA0State = (analogRead(A0) < DARK_THRESHOLD);
         //If state is still different than the previous one, use the current state as the new state
         if (pinA0State != pinA0StatePrev) {
             pinA0StatePrev = pinA0State;
