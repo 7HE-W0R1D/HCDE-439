@@ -149,6 +149,7 @@ void loop() {
     Serial.println("Reading Pin A0...");
     //Read the voltage from pin A0.
     pinA0Val = analogRead(A0);
+    pinA0Val = map(pinA0Val, 0, 1023, 0, 255);
     Serial.println("Pin A0 reads: " + String(pinA0Val));
     
     //Set pinA0State to TRUE if pin A0 reads below 70, FALSE otherwise.
