@@ -133,74 +133,75 @@ if (pinA0State != pinA0StatePrev)
             </div>
             <div class="code-wrapper">
                 <pre><code class="arduino">bool pinA0State;
-        bool pinA0StatePrev;
-        int pinA0Val;
-        int pin11Val = 0;
-        int DARK_THRESHOLD = 10;
-        
-        void setup() {
-            pinMode(13, OUTPUT);
-            pinMode(11, OUTPUT);
-            Serial.begin(115200);
+bool pinA0StatePrev;
+int pinA0Val = 0;
+int pin11Val = 0;
+int DARK_THRESHOLD = 10;
+
+void setup() {
+    pinMode(13, OUTPUT);
+    pinMode(11, OUTPUT);
+    Serial.begin(115200);
+}
+
+void loop() {
+    // put your main code here, to run repeatedly:
+    //Print out status to the serial port
+    Serial.println("Reading Pin A0...");
+    //Read the voltage from pin A0, and convert the value range from 0-1023 to 0-255 (better fit output value)
+    pinA0Val = map(analogRead(A0), 0, 1023, 0, 255);
+    
+    Serial.println("Pin A0 reads: " + String(pinA0Val));
+    
+    //Set pinA0State to TRUE if pin A0 reads below 30, FALSE otherwise.
+    pinA0State = (pinA0Val < DARK_THRESHOLD);
+
+    //If pinA0 has a different state as the stored, previous one
+    if (pinA0State != pinA0StatePrev)
+    {
+        //Wait 1 second to debounce
+        delay(1000);
+        //Read pin A0 again, and do the 0-1023 to 0-255 conversion again
+        pinA0State = (map(analogRead(A0), 0, 1023, 0, 255) < DARK_THRESHOLD);
+        Serial.println("Pin A0 reads: " + String(pinA0Val));
+        //If state is still different than the previous one, use the current state as the new state
+        if (pinA0State != pinA0StatePrev) {
+            pinA0StatePrev = pinA0State;
         }
-        
-        void loop() {
-            // put your main code here, to run repeatedly:
-            //Print out status to the serial port
-            Serial.println("Reading Pin A0...");
-            //Read the voltage from pin A0.
-            pinA0Val = map(analogRead(A0), 0, 1023, 0, 255);
-            
-            Serial.println("Pin A0 reads: " + String(pinA0Val));
-            
-            //Set pinA0State to TRUE if pin A0 reads below 30, FALSE otherwise.
-            pinA0State = (pinA0Val < DARK_THRESHOLD);
-        
-            //If pinA0 has a different state as the stored, previous one
-            if (pinA0State != pinA0StatePrev)
-            {
-                //Wait 1 second to debounce
-                delay(1000);
-                //Read pin A0 again
-                pinA0State = (map(analogRead(A0), 0, 1023, 0, 255) < DARK_THRESHOLD);
-                //If state is still different than the previous one, use the current state as the new state
-                if (pinA0State != pinA0StatePrev) {
-                    pinA0StatePrev = pinA0State;
-                }
-                //Use the previous state otherwise
-                else {
-                    pinA0State = pinA0StatePrev;
-                }
-            }
-            
-            //Turn LED at pin 13 on
-            digitalWrite(13, pinA0State);
-        
-            //If pinA0State is TRUE and pin11Val is not max, increase pin11Val
-            if (pinA0State && pin11Val < 255) {
-                pin11Val++;
-            }
-            //If pinA0State is FALSE and pin11Val is higher than 0, decrease pin11Val
-            else if (pin11Val > 0) {
-                pin11Val -= 5;
-            }
-        
-            //Because Arduino cannot write negative value, we set pin11Val to 0 is it's negative
-            if (pin11Val < 0) {
-                pin11Val = 0;
-            }
-        
-            //A small equation to smooth the lighting curve, graph on website
-            int pin11Conv = (255 / 2) * (1 - cos(pin11Val * PI / 255));
-            //Print out pin11Conv to the serial port
-            Serial.println("pin11 original value: " + String(pin11Val));
-            //Write pin11Conv's value to port 11's LED
-            analogWrite(11, pin11Conv);
-            //Print out pin11Val to the serial port
-            Serial.println("pin11 converted value" + String(pin11Conv));
-        
-            delay(500);
-        }</code></pre>
+        //Use the previous state otherwise
+        else {
+            pinA0State = pinA0StatePrev;
+        }
+    }
+    
+    //Turn LED at pin 13 on
+    digitalWrite(13, pinA0State);
+
+    //If pinA0State is TRUE and pin11Val is not max, increase pin11Val
+    if (pinA0State && pin11Val < 255) {
+        pin11Val++;
+    }
+    //If pinA0State is FALSE and pin11Val is higher than 0, decrease pin11Val
+    else if (pin11Val > 0) {
+        pin11Val -= 5;
+    }
+
+    //Because Arduino cannot write negative value, we set pin11Val to 0 is it's negative
+    if (pin11Val < 0) {
+        pin11Val = 0;
+    }
+
+    //A small equation to smooth the lighting curve, graph on website
+    int pin11Conv = (255 / 2) * (1 - cos(pin11Val * PI / 255));
+    //Print out pin11Conv to the serial port
+    Serial.println("pin11 original value: " + String(pin11Val));
+    //Write pin11Conv's value to port 11's LED
+    analogWrite(11, pin11Conv);
+    //Print out pin11Val to the serial port
+    Serial.println("pin11 converted value" + String(pin11Conv));
+
+    delay(500);
+}</code></pre>
             </div>
         </div>
 
