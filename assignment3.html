@@ -24,9 +24,15 @@
             <h4 class="top-title">HCDE 439</h4>
             <div class="nav-list">
                 <a class="nav-items" href="index.html">Home</a>
-                <a class="nav-items" href="assignment1.html">Assignment 1</a>
-                <a class="nav-items" href="assignment2.html">Assignment 2</a>
-                <a class="nav-items" href="assignment3.html">Assignment 3</a>
+                <div class="dropdown">
+                    <a href="#">Assignments</a>
+                    <div class="dropdown-content">
+                        <a class="nav-items" href="assignment1.html">Assignment 1</a>
+                        <a class="nav-items" href="assignment2.html">Assignment 2</a>
+                        <a class="nav-items" href="assignment3.html">Assignment 3</a>
+                    </div>
+                </div>
+                <a class="nav-items" href="#">About</a>
             </div>
         </nav>
 
@@ -80,22 +86,22 @@
                 The logic is simple: we store the previous state of the photocell, and when the current state is different than the previous state, we wait for a while and check again. If the state is still different, we treat it as a new state and act accordingly. 
                 An example code snippet for debounce is provided below:
             </p>
-            <code>pinA0Val = analogRead(A0);
+            <code>Serial.println("Reading Pin A0...");
+pinA0Val = map(analogRead(A0), 0, 1023, 0, 255);
 Serial.println("Pin A0 reads: " + String(pinA0Val));
-
-pinA0State = (pinA0Val < 70);
+pinA0State = (pinA0Val < DARK_THRESHOLD);
 if (pinA0State != pinA0StatePrev)
 {
     delay(1000);
-    pinA0State = (analogRead(A0) < 70);
+    pinA0State = (map(analogRead(A0), 0, 1023, 0, 255) < DARK_THRESHOLD);
+    Serial.println("Pin A0 reads: " + String(pinA0Val));
     if (pinA0State != pinA0StatePrev) {
         pinA0StatePrev = pinA0State;
     }
     else {
         pinA0State = pinA0StatePrev;
     }
-}
-            </code>
+}</code>
             <h4>A Lighting Equation <a href="assignment2.html#light-eq">(Same as A2)</a></h4>
             <p>
                 When testing the code, I found that the value of <code>analogWrite</code> is not a linear relationship with the brightness of the LED. When <code>analogWrite</code> increases constantly, the LED's brightness would grow fast at first and then slow down.

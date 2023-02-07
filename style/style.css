@@ -60,10 +60,15 @@ p {
 
 code {
   font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
-  white-space: pre-wrap;
+  white-space: break-spaces;
   margin: 0;
   padding: 0 1em !important;
   font-size: 0.85rem;
+  margin-left: -1em;
+}
+
+pre code {
+  margin-left: auto;
 }
 
 a {
@@ -149,6 +154,7 @@ nav {
   display: flex;
   background-color: var(--n0);
   color: var(--n6);
+  overflow: hidden;
 }
 
 .top-title {
@@ -174,6 +180,25 @@ nav {
 
 .nav-list .active {
   color: var(--pink);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--n3);
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  padding: 16px 24px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
 }
 
 .site-title {
