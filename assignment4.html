@@ -62,7 +62,8 @@
             <p>
                 The images above are my schematic for assignment 4. There is a 128 * 64 OLED display and a rotary encoder module. 
                 The OLED display have its SCL(SCK) pin connected to pin A5, and SDA pin connected to pin A4 of the Arduino. 
-                The rotary encoder has its SW(switch) pin connected to ground as I'm not using it, and DT pin to pin 3, and CLK pin to pin 2 of the Arduino. 
+                The rotary encoder has its DT pin to pin 3, and CLK pin to pin 2 of the Arduino. I'm not using the SW(switch) pin, 
+                according to the data sheet, it don't have to be connected.
             </p>
             <h4>Why Pin 2 & Pin 3?</h4>
             <p>
@@ -78,10 +79,10 @@
                 <div class="subtitle">Above the blueprint</div>
             </div>
             <div class="lightbox-preview">
-                <img src="static/A4/6291919161139507459_121.jpg" class="media" onclick='openLightbox("lightbox2");'>
+                <img src="static/A4/6294194729302208967_121.jpg" class="media" onclick='openLightbox("lightbox2");'>
             </div>
             <div class="lightbox-expand" onclick='closeLightbox("lightbox2");' id="lightbox2" style="display: none;">
-                <img src="static/A4/6291919161139507459_121.jpg" class="media">
+                <img src="static/A4/6294194729302208967_121.jpg" class="media">
             </div>
             <p>
                 The above image shows the actual Arduino circuit build on breadboard. The red LED and the button are not used in this assignment.
@@ -274,10 +275,10 @@ void drawIndicator(int inputPos) {
                 <div class="subtitle">Coming alive</div>
             </div>
             <div class="lightbox-preview">
-                <img src="static/A4/ezgif-4-bf10ebdc73.gif" class="media" onclick='openLightbox("lightbox3");'></img>
+                <img src="static/A4/ezgif-2-6fc41af76f.gif" class="media" onclick='openLightbox("lightbox3");'></img>
             </div>
             <div class="lightbox-expand" id="lightbox3" onclick='closeLightbox("lightbox3");' style="display: none;">
-                <img src="static/A4/ezgif-4-bf10ebdc73.gif" class="media"></img>
+                <img src="static/A4/ezgif-2-6fc41af76f.gif" class="media"></img>
             </div>
             <p>
                 The above gif shows how this program run. The screen will first display a Honda logo for two seconds. 
