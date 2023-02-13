@@ -1,0 +1,301 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+    <head> 
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+        <title>Assignment 4</title> 
+
+        <link href="style/style.css" media="screen" rel="stylesheet" type="text/css" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Forum&family=Josefin+Sans:ital,wght@0,100;0,400;1,100;1,400&family=Raleway:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        <script src="script/index.js"></script>
+        <script src="script/lightbox.js"></script>
+    </head> 
+    <body> 
+        <nav>
+            <h4 class="top-title">HCDE 439</h4>
+            <div class="nav-list">
+                <a class="nav-items" href="index.html">Home</a>                <div class="dropdown">
+                    <a href="#">Assignments</a>
+                    <div class="dropdown-content">
+                        <a class="nav-items" href="assignment1.html">Assignment 1</a>
+                        <a class="nav-items" href="assignment2.html">Assignment 2</a>
+                        <a class="nav-items" href="assignment3.html">Assignment 3</a>
+                        <a class="nav-items" href="assignment4.html">Assignment 4</a>
+                    </div>
+                </div>
+                <a class="nav-items" href="#">About</a>
+            </div>
+        </nav>
+
+        <div class="dark1">
+            <h2>Assignment 4 -- Libraries</h2>
+            <p>
+                More Parts With the Help of Libraries
+            </p>
+        </div>
+
+        <div class="content bright1" id="schematic">
+            <div class="title">
+                <h3>Schematic</h3>
+                <div class="subtitle">Treasure Maps</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A4/A4_schem.png" class="media" onclick='openLightbox("lightbox0");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox0");' id="lightbox0" style="display: none;">
+                <img src="static/A4/A4_schem.png" class="media">
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A4/A4_bb.svg" class="media" onclick='openLightbox("lightbox1");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox1");' id="lightbox1" style="display: none;">
+                <img src="static/A4/A4_bb.svg" class="media">
+            </div>
+            <p>
+                The images above are my schematic for assignment 4. There is a 128 * 64 OLED display and a rotary encoder module. 
+                The OLED display have its SCL(SCK) pin connected to pin A5, and SDA pin connected to pin A4 of the Arduino. 
+                The rotary encoder has its SW(switch) pin connected to ground as I'm not using it, and DT pin to pin 3, and CLK pin to pin 2 of the Arduino. 
+            </p>
+            <h4>Why Pin 2 & Pin 3?</h4>
+            <p>
+                According to the rotary encoder's library, when using pins that have the "interrupt" ability, the encoder will have the best performance. 
+                And from the Arduino website, only pin 2 and 3 on the UNO has the "interrupt" ability. When connecting to pin 5 and 6, 
+                the encoder's response will become unstable and laggy, making the user experience sub-optimal.
+            </p>
+        </div>
+
+        <div class="content dark2" id="circuit">
+            <div class="title">
+                <h3>Circuit</h3>
+                <div class="subtitle">Above the blueprint</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A4/6291919161139507459_121.jpg" class="media" onclick='openLightbox("lightbox2");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox2");' id="lightbox2" style="display: none;">
+                <img src="static/A4/6291919161139507459_121.jpg" class="media">
+            </div>
+            <p>
+                The above image shows the actual Arduino circuit build on breadboard.
+            </p>
+        </div>
+        
+        <div class="content bright2" id="firmware">
+            <div class="title">
+                <h3>Firmware</h3>
+                <div class="subtitle">Inside the chips</div>
+            </div>
+            <div class="code-wrapper">
+                <pre><code class="arduino">#include &lt;SPI.h>
+#include &lt;Wire.h>
+#include &lt;Adafruit_GFX.h>
+#include &lt;Adafruit_SSD1306.h>
+#include &lt;Encoder.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+// A Honda logo to display
+// 's-l500', 48x48px
+const unsigned char epd_bitmap_s_l500 [] PROGMEM = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0xff, 0xff, 
+    0xf0, 0x00, 0x00, 0x7c, 0x00, 0x00, 0x1e, 0x00, 0x00, 0xe3, 0x00, 0x00, 0xe3, 0x00, 0x01, 0xc3, 
+    0x00, 0x00, 0xe1, 0x80, 0x01, 0x83, 0x80, 0x00, 0xe0, 0x80, 0x01, 0x83, 0x80, 0x00, 0xe0, 0xc0, 
+    0x01, 0x03, 0x80, 0x01, 0xe0, 0xc0, 0x03, 0x03, 0x80, 0x01, 0xc0, 0xc0, 0x03, 0x03, 0x80, 0x01, 
+    0xc0, 0xc0, 0x03, 0x03, 0xc0, 0x01, 0xc0, 0xc0, 0x03, 0x03, 0xc0, 0x01, 0xc0, 0xc0, 0x03, 0x03, 
+    0xc0, 0x03, 0xc0, 0xc0, 0x03, 0x03, 0xc0, 0x03, 0xc0, 0xc0, 0x03, 0x03, 0xe0, 0x03, 0xc0, 0xc0, 
+    0x03, 0x03, 0xe0, 0x03, 0xc0, 0xc0, 0x01, 0x03, 0xe0, 0x07, 0xc0, 0xc0, 0x01, 0x03, 0xf0, 0x07, 
+    0xc0, 0xc0, 0x01, 0x03, 0xf8, 0x1f, 0xc0, 0xc0, 0x01, 0x03, 0xff, 0xff, 0xc0, 0xc0, 0x01, 0x83, 
+    0xff, 0xff, 0xc0, 0x80, 0x01, 0x81, 0xf8, 0x1f, 0xc0, 0x80, 0x01, 0x81, 0xf8, 0x0f, 0xc1, 0x80, 
+    0x00, 0x81, 0xf0, 0x0f, 0xc1, 0x80, 0x00, 0xc1, 0xf0, 0x07, 0xc1, 0x80, 0x00, 0xc1, 0xe0, 0x07, 
+    0xc3, 0x00, 0x00, 0x61, 0xe0, 0x07, 0x83, 0x00, 0x00, 0x71, 0xe0, 0x03, 0x8e, 0x00, 0x00, 0x1f, 
+    0x00, 0x00, 0xfc, 0x00, 0x00, 0x03, 0xff, 0xff, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
+long oldPos = 0;
+long currPos;
+// Half of the total level the knob can adjust (-20 to +20)
+const int KNOB_LEVEL_HALF = 20;
+int knobExceed = 0;
+int currExceed = 0;
+// Connect to pin 2 and pin 3, only two pins with interrupt ability to ensure max performance
+Encoder myEnc(2, 3);
+
+void setup() {
+    Serial.begin(115200);
+
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+    }
+    // Clear the screen
+    display.clearDisplay();
+    // Display Logo
+    display.drawBitmap(
+    (display.width()  - 48) / 2,
+    (display.height() - 48) / 2,
+    epd_bitmap_s_l500, 48, 48, 1
+    );
+    display.display();
+    delay(2000);
+    display.clearDisplay();
+    
+    delay(1000);
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    // Set cursor to the upper left corner
+    display.setCursor(0, 0);
+    display.print("Value: ");
+
+    // Move cursor
+    display.setCursor(64, 0);
+    // Set text to be inverted color
+    display.setTextColor(BLACK, WHITE);
+    display.println(String(currPos));
+    drawIndicator(currPos);
+    display.display();
+}
+
+void loop() {
+    // Read from the rotary encoder
+    currPos = posConv(myEnc.read());
+    // Enter if converted position changed or Exceeding status changed
+    if (currPos != oldPos || currExceed != knobExceed) {
+    oldPos = currPos;
+    // Set currExceed same as knobExceed
+    currExceed = knobExceed;
+    Serial.println(currPos);
+    
+    // Clear previous content
+    display.clearDisplay();
+    // Set text size
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    // Set cursor to the upper left corner
+    display.setCursor(0, 0);
+    // Display content
+    display.print("Value: ");
+
+    // Move cursor
+    display.setCursor(64, 0);
+    // Set text to be inverted color
+    display.setTextColor(BLACK, WHITE);
+    display.println(String(currPos));
+
+    drawIndicator(currPos);
+
+    display.display();
+    }
+
+}
+
+int posConv(long inputPos) {
+    // Serial.println(inputPos);
+    int result;
+    // Result is position divided by four since the knob clicks every four turns
+    result = (int)(round((inputPos) / 4.0));
+    // Serial.println(result);
+    if (result > KNOB_LEVEL_HALF) {
+    // Knob value exceeds max value
+    result = KNOB_LEVEL_HALF;
+    // Set knob value to max to prevent further increase 
+    myEnc.write(KNOB_LEVEL_HALF * 4 + 2);
+    knobExceed = 1;
+    }
+    else if (result < -KNOB_LEVEL_HALF) {
+    // Knob value exceeds min value
+    result = -KNOB_LEVEL_HALF;
+    // Set knob value to min to prevent further decrease 
+    myEnc.write(-KNOB_LEVEL_HALF * 4 - 2);
+    knobExceed = -1;
+    }
+    else {
+    knobExceed = 0;
+    }
+    Serial.println(knobExceed);
+    return result;
+}
+
+void drawIndicator(int inputPos) {
+    int _width = 2;
+    int _height = 16;
+    int _x;
+    int _y = 40;
+    int padding = 8;
+
+    // calculate indicator's position from input position value
+    _x = map(inputPos, -KNOB_LEVEL_HALF, KNOB_LEVEL_HALF, padding, SCREEN_WIDTH - padding);
+    _x = floor(_x - _width / 2);
+
+    // Draw a straight line as the slider
+    display.drawLine(padding, _y, SCREEN_WIDTH - padding, _y, WHITE);
+
+    // Draw a rectangle as the indicator
+    display.fillRoundRect(_x, floor(_y - (_height / 2)), _width, _height, 1, WHITE);
+
+    // Draw three dashes
+    if (knobExceed == 1) {
+    // Knob is turning too high
+    display.drawLine(SCREEN_WIDTH - padding + 2, floor(_y - _height / 4), SCREEN_WIDTH - padding + 4, floor(_y - _height / 4), WHITE);
+    display.drawLine(SCREEN_WIDTH - padding + 2, _y, SCREEN_WIDTH - padding + 4, _y, WHITE);
+    display.drawLine(SCREEN_WIDTH - padding + 2, floor(_y + _height / 4), SCREEN_WIDTH - padding + 4, floor(_y + _height / 4), WHITE);
+    }
+    else if (knobExceed == -1) {
+    // Knob is turning too low
+    display.drawLine(padding - 2, floor(_y - _height / 4), padding - 4, floor(_y - _height / 4), WHITE);
+    display.drawLine(padding - 2, _y, padding - 4, _y, WHITE);
+    display.drawLine(padding - 2, floor(_y + _height / 4), padding - 4, floor(_y + _height / 4), WHITE);
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="content dark1" id="actual-operation">
+            <div class="title">
+                <h3>Actual Operation</h3>
+                <div class="subtitle">Coming alive</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A4/ezgif-4-bf10ebdc73.gif" class="media" onclick='openLightbox("lightbox3");'></img>
+            </div>
+            <div class="lightbox-expand" id="lightbox3" onclick='closeLightbox("lightbox3");' style="display: none;">
+                <img src="static/A4/ezgif-4-bf10ebdc73.gif" class="media"></img>
+            </div>
+            <p>
+                The above gif shows how this program run. The screen will first display a Honda logo for two seconds. 
+                Then it will display the current value of the rotary encoder, starting from 0. The user can rotate the knob 
+                clockwise to increase the value or counter-clockwise to decrease. Values won't change when reaching the -20 ~ +20 limit. 
+                Below the value is a small indicator that will also change its position based on the value. When reached the limit, 
+                if the user still rotates in that direction, small dashes appear beside the indicator to remind the users to stop.
+            </p>
+        </div>
+
+        <button onclick="scrollToTop()" id="topBtn" title="Go to top">
+            <span class="material-icons">
+                arrow_upward
+            </span>
+        </button>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+    </body>
+    
+</html>
