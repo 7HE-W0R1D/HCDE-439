@@ -109,6 +109,14 @@ a:visited {
   color: var(--brown);
 }
 
+p a {
+  color: var(--pink);
+  font-family: 'Forum', cursive;
+  font-size: 1rem;
+  text-decoration: underline;
+  transition: ease-in-out 300ms;
+}
+
 body > * {
   padding: 32px 2.6% 24px 2.6%;
 }

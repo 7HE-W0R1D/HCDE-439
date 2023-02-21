@@ -1,0 +1,433 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+    <head> 
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+        <title>Assignment 5</title> 
+
+        <link href="style/style.css" media="screen" rel="stylesheet" type="text/css" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Forum&family=Josefin+Sans:ital,wght@0,100;0,400;1,100;1,400&family=Raleway:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        <script src="script/index.js"></script>
+        <script src="script/lightbox.js"></script>
+    </head> 
+    <body> 
+        <nav>
+            <h4 class="top-title">HCDE 439</h4>
+            <div class="nav-list">
+                <a class="nav-items" href="index.html">Home</a>                <div class="dropdown">
+                    <a href="#">Assignments</a>
+                    <div class="dropdown-content">
+                        <a class="nav-items" href="assignment1.html">Assignment 1</a>
+                        <a class="nav-items" href="assignment2.html">Assignment 2</a>
+                        <a class="nav-items" href="assignment3.html">Assignment 3</a>
+                        <a class="nav-items" href="assignment4.html">Assignment 4</a>
+                        <a class="nav-items" href="assignment5.html">Assignment 5</a>
+                    </div>
+                </div>
+                <a class="nav-items" href="#">About</a>
+            </div>
+        </nav>
+
+        <div class="dark1">
+            <h2>Assignment 5 -- Transistors</h2>
+            <p>
+                Arduino with Higher Voltage Components
+            </p>
+        </div>
+
+        <div class="content bright1" id="schematic">
+            <div class="title">
+                <h3>Schematic</h3>
+                <div class="subtitle">Treasure Maps</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A5/A5_schem.png" class="media" onclick='openLightbox("lightbox0");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox0");' id="lightbox0" style="display: none;">
+                <img src="static/A5/A5_schem.png" class="media">
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A5/A5_bb.svg" class="media" onclick='openLightbox("lightbox1");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox1");' id="lightbox1" style="display: none;">
+                <img src="static/A5/A5_bb.svg" class="media">
+            </div>
+            <p>
+                The images above are my schematic for assignment 5. There is a 128 * 64 OLED display and a rotary encoder module. 
+                The OLED display have its SCL(SCK) pin connected to pin A5, and SDA pin connected to pin A4 of the Arduino. 
+                The rotary encoder has its DT pin to pin 3, and CLK pin to pin 2 of the Arduino. I'm not using the SW(switch) pin, 
+                according to the data sheet, it don't have to be connected. Another switch is connected to pin 8 of the Arduino.
+            </p>
+            <p>
+                The bottom part of the breadboard is the 9V high voltage part, the 30N06 transistor has its gate pin connected to a 100Ohm resistor; 
+                its drain pin connected to negative side of the motor, and its source pin connect to ground. The motor has a diode and a 104pF capacitor connected to both side of it, 
+                with the diode's anode connected to the negative side of the motor. The positive side of the motor is connected to the 9V rail. 
+            </p>
+            <h4>Motor Speed</h4>
+            <p>
+                Due to the characteristics of the MOSFET, the higher the voltage on gate pin, the more the current flowing through the other two pins. So we can control the motor's speed by controlling the voltage at the gate pin. 
+                A simple <code>analogWrite()</code> can achieve that. During implementation and testing, I found that <code>analogWrite(255)</code> high for the motor. 
+                So in the code, I'm setting the range to 0 ~ 100 to result in a decent speed that's not too high.
+            </p>
+            <h4>Motor Safety</h4>
+            <p>
+                According to the <a href="https://cdn.sparkfun.com/datasheets/Components/General/FQP30N06L.pdf" target="_blank">transistor's data sheet</a>, this 30N06 transistor can handle a max current of 32A at room temperature and a max voltage of 60V. 
+                And from the web, the small motor draws less than 200mA current when put on 9V. I also measured the current when the motor is directed connected to the battery. 
+                The multimeter reads about 120mA at the max, which is lower than the transistor's 32A. The voltage used here is the 9V battery so it's also lower than the 60V limit of the transistor. Since both are lower, it's safe for both the motor and the transistor.
+            </p>
+            <div class="lightbox-preview">
+                <img src="static/A5/6316825139618099832_121.jpg" class="media" onclick='openLightbox("lightbox2");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox2");' id="lightbox1" style="display: none;">
+                <img src="static/A5/6316825139618099832_121.jpg" class="media">
+            </div>
+            <p>
+                There's also a 1K resistor connected in series with the gate pin of the transistor. This resistor is used to limit the current going into the transistor to prevent breaking it. It also limits the current drew from the Arduino chip to save power and protect the Arduino.
+            </p>
+            <h4>Better Power Supply</h4>
+            <p>
+                The motor is introducing lots of noise into the system, and sometimes the Arduino behaves weirdly or freezes due to the noise. To compensate for that, 
+                I put a 22pF capacitor between the power rails of the arduino, a 104pF capacitor between the 9V rail, and a 104pF capacitor between the motor. The capacitors can ease the fluctuation of the power on the breadboard.
+            </p>
+            <h4>Better I2C Bus Performance</h4>
+            <p>
+                According to the web, two 4.7k ~ 10k Ohm resistors are required to pull-up the SCK(SCL) and SDA lines in the I2C bus. These resistors can let to better performance and more resistance to noises. I chose two 5.1k Ohm resistors that are available in the kit.  
+            </p>
+        </div>
+
+        <div class="content dark2" id="circuit">
+            <div class="title">
+                <h3>Circuit</h3>
+                <div class="subtitle">Above the blueprint</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A5/6316825139618099829_121.jpg" class="media" onclick='openLightbox("lightbox3");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox3");' id="lightbox2" style="display: none;">
+                <img src="static/A5/6316825139618099829_121.jpg" class="media">
+            </div>
+            <p>
+                The above image shows the actual Arduino circuit build on breadboard.
+            </p>
+        </div>
+        
+        <div class="content bright2" id="firmware">
+            <div class="title">
+                <h3>Firmware</h3>
+                <div class="subtitle">Inside the chips</div>
+            </div>
+            <div class="code-wrapper">
+                <pre><code class="arduino">#include &lt;SPI.h>
+#include &lt;Wire.h>
+#include &lt;Adafruit_GFX.h>
+#include &lt;Adafruit_SSD1306.h>
+#include &lt;Encoder.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+#define SW_PIN 8 // Encoder Switch pin to 8
+
+// A Mitsubishi Logo to display
+// 'images', 48x48px
+const unsigned char epd_bitmap_images [] PROGMEM = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 
+    0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x03, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x03, 0xc0, 0x00, 0x00, 
+    0x00, 0x00, 0x07, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x0f, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x0f, 0xf0, 
+    0x00, 0x00, 0x00, 0x00, 0x1f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x1f, 0xf8, 0x00, 0x00, 0x00, 0x00, 
+    0x3f, 0xfc, 0x00, 0x00, 0x00, 0x00, 0x7f, 0xfc, 0x00, 0x00, 0x00, 0x00, 0x7f, 0xfe, 0x00, 0x00, 
+    0x00, 0x00, 0xff, 0xfe, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x7f, 0xfe, 
+    0x00, 0x00, 0x00, 0x00, 0x7f, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x3f, 0xfc, 0x00, 0x00, 0x00, 0x00, 
+    0x3f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x1f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x1f, 0xf0, 0x00, 0x00, 
+    0x00, 0x00, 0x0f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x07, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x07, 0xc0, 
+    0x00, 0x00, 0x00, 0x00, 0x03, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x03, 0x80, 0x00, 0x00, 0x00, 0x00, 
+    0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xfe, 0xff, 0xff, 0x00, 
+    0x01, 0xff, 0xfe, 0x7f, 0xff, 0x00, 0x01, 0xff, 0xfc, 0x3f, 0xff, 0x80, 0x03, 0xff, 0xfc, 0x3f, 
+    0xff, 0xc0, 0x07, 0xff, 0xf8, 0x1f, 0xff, 0xc0, 0x07, 0xff, 0xf0, 0x1f, 0xff, 0xe0, 0x0f, 0xff, 
+    0xf0, 0x0f, 0xff, 0xe0, 0x0f, 0xff, 0xe0, 0x0f, 0xff, 0xf0, 0x1f, 0xff, 0xe0, 0x07, 0xff, 0xf8, 
+    0x1f, 0xff, 0xc0, 0x03, 0xff, 0xf8, 0x3f, 0xff, 0xc0, 0x03, 0xff, 0xfc, 0x7f, 0xff, 0x80, 0x01, 
+    0xff, 0xfe, 0x7f, 0xff, 0x00, 0x01, 0xff, 0xfe, 0x7f, 0xff, 0x00, 0x00, 0xff, 0xfe, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
+// A tick to display
+// 'download', 32x32px
+const unsigned char epd_bitmap_download [] PROGMEM = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x38, 0x00, 0x00, 0x00, 0x7e, 0x00, 0x00, 0x00, 0x7f, 
+    0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x01, 0xfe, 0x00, 0x00, 0x01, 0xfe, 0x00, 0x00, 0x03, 0xfc, 
+    0x00, 0x00, 0x07, 0xf8, 0x00, 0x00, 0x07, 0xf8, 0x00, 0x00, 0x0f, 0xf0, 0x00, 0x00, 0x1f, 0xe0, 
+    0x00, 0x00, 0x1f, 0xe0, 0x00, 0x00, 0x3f, 0xc0, 0x00, 0x00, 0x7f, 0x80, 0x18, 0x00, 0xff, 0x80, 
+    0x3c, 0x00, 0xff, 0x00, 0x7e, 0x01, 0xfe, 0x00, 0xff, 0x01, 0xfe, 0x00, 0xff, 0x83, 0xfc, 0x00, 
+    0x7f, 0xc7, 0xf8, 0x00, 0x3f, 0xef, 0xf8, 0x00, 0x1f, 0xff, 0xf0, 0x00, 0x0f, 0xff, 0xe0, 0x00, 
+    0x07, 0xff, 0xe0, 0x00, 0x03, 0xff, 0xc0, 0x00, 0x01, 0xff, 0x80, 0x00, 0x00, 0xff, 0x80, 0x00, 
+    0x00, 0x7f, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
+int oldPos = 0;
+int currPos = -20;
+int currVal = currPos;
+bool swStatus;
+// Half of the total level the knob can adjust (-20 to +20)
+const int KNOB_LEVEL_HALF = 20;
+int knobExceed = 0;
+int currExceed = 0;
+// Connect to pin 2 and pin 3, only two pins with interrupt ability to ensure max performance
+Encoder myEnc(2, 3);
+
+void updateInfoScreen(bool forceUpdate = false) {
+    // Read from the rotary encoder
+    currPos = posConv(myEnc.read());
+    // Curr value is from 0 to 40
+    currVal = currPos + 20; 
+    // Enter if converted position changed or Exceeding status changed
+    if (currPos != oldPos || currExceed != knobExceed || forceUpdate) {
+    oldPos = currPos;
+    // Set currExceed same as knobExceed
+    currExceed = knobExceed;
+    
+    // Clear previous content
+    display.clearDisplay();
+    // Set text size
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    // Set cursor to the upper left corner
+    display.setCursor(0, 0);
+    // Display content
+    display.print("Value: ");
+
+    // Move cursor
+    display.setCursor(64, 0);
+    // Set text to be inverted color
+    display.setTextColor(BLACK, WHITE);
+    display.println(String(currVal));
+
+    drawIndicator(currPos);
+
+    display.display();
+    }
+}
+
+void setup() {
+    // Serial.begin(115200);
+    // Pin 11 serves as the control pin for the MOSFET so it is set as OUTPUT
+    pinMode(11, OUTPUT);
+    // Pin 8 as the switch detect pin is set to INPUT, and when it's low it is depressed
+    pinMode(SW_PIN, INPUT);
+    myEnc.write(-KNOB_LEVEL_HALF * 4 - 2);
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    // Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+    }
+    // Clear the screen
+    display.clearDisplay();
+    // Display Logo
+    display.drawBitmap(
+    (display.width()  - 48) / 2,
+    (display.height() - 48) / 2,
+    epd_bitmap_images, 48, 48, 1
+    );
+    display.display();
+    delay(2000);
+    display.clearDisplay();
+    
+    delay(1000);
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    // Set cursor to the upper left corner
+    display.setCursor(0, 0);
+    display.print("Value: ");
+
+    // Move cursor
+    display.setCursor(64, 0);
+    // Set text to be inverted color
+    display.setTextColor(BLACK, WHITE);
+    currVal = currPos + 20; 
+    display.println(String(currVal));
+    drawIndicator(currPos);
+    display.display();
+}
+
+void loop() {
+    updateInfoScreen();
+    swStatus = digitalRead(SW_PIN);
+    // The switch is active low, which means when it is depressed it becomes LOW
+    if (!swStatus) {
+    delay(50);
+    // Debounce here
+    if (!digitalRead(SW_PIN)) {
+        // This animation will freeze the I2C bus and the Arduino when motor is running, 
+        // disabled it for this assignment
+        // drawConfirmScreen();
+    
+        updateInfoScreen(true);
+        delay(5);
+        // Control the motor speed, 100 is already a decent speed for the motor
+        analogWrite(11, map(currPos, -20, 20, 0, 100));
+        delay(5);
+    }
+
+    }
+
+}
+
+int posConv(long inputPos) {
+    // Serial.println(inputPos);
+    int result;
+    // Result is position divided by four since the knob clicks every four turns
+    result = (int)(round((inputPos) / 4.0));
+    // Serial.println(result);
+    if (result > KNOB_LEVEL_HALF) {
+    // Knob value exceeds max value
+    result = KNOB_LEVEL_HALF;
+    // Set knob value to max to prevent further increase 
+    myEnc.write(KNOB_LEVEL_HALF * 4 + 2);
+    knobExceed = 1;
+    }
+    else if (result < -KNOB_LEVEL_HALF) {
+    // Knob value exceeds min value
+    result = -KNOB_LEVEL_HALF;
+    // Set knob value to min to prevent further decrease 
+    myEnc.write(-KNOB_LEVEL_HALF * 4 - 2);
+    knobExceed = -1;
+    }
+    else {
+    knobExceed = 0;
+    }
+    // Serial.println(knobExceed);
+    return result;
+}
+
+void drawIndicator(int inputPos) {
+    int _width = 2;
+    int _height = 16;
+    int _x;
+    int _y = 40;
+    int padding = 8;
+
+    // calculate indicator's position from input position value
+    _x = map(inputPos, -KNOB_LEVEL_HALF, KNOB_LEVEL_HALF, padding, SCREEN_WIDTH - padding);
+    _x = floor(_x - _width / 2);
+
+    // Draw a straight line as the slider
+    display.drawLine(padding, _y, SCREEN_WIDTH - padding, _y, WHITE);
+
+    // Draw a rectangle as the indicator
+    display.fillRoundRect(_x, floor(_y - (_height / 2)), _width, _height, 1, WHITE);
+
+    // Draw three dashes
+    if (knobExceed == 1) {
+    // Knob is turning too high
+    display.drawLine(SCREEN_WIDTH - padding + 2, floor(_y - _height / 4), SCREEN_WIDTH - padding + 4, floor(_y - _height / 4), WHITE);
+    display.drawLine(SCREEN_WIDTH - padding + 2, _y, SCREEN_WIDTH - padding + 4, _y, WHITE);
+    display.drawLine(SCREEN_WIDTH - padding + 2, floor(_y + _height / 4), SCREEN_WIDTH - padding + 4, floor(_y + _height / 4), WHITE);
+    }
+    else if (knobExceed == -1) {
+    // Knob is turning too low
+    display.drawLine(padding - 2, floor(_y - _height / 4), padding - 4, floor(_y - _height / 4), WHITE);
+    display.drawLine(padding - 2, _y, padding - 4, _y, WHITE);
+    display.drawLine(padding - 2, floor(_y + _height / 4), padding - 4, floor(_y + _height / 4), WHITE);
+    }
+}
+
+void drawConfirmScreen() {
+    // Clear buffer
+    display.clearDisplay();
+    // Play 20 frames of the animation
+    int iteration = 20;
+    int padding = 2;
+    int resultX;
+    int resultY;
+    int resultR;
+
+    // Draw a enlarging rounded rectangle here
+    for (int i = 0; i < iteration; i++) {
+    display.clearDisplay();
+    // Calculate W, H, and radius of the rectangle
+    resultX = round(easeInOutSine(i, 0, 20, 0, SCREEN_WIDTH - padding));
+    resultY = round(easeInOutSine(i, 0, 20, 0, SCREEN_HEIGHT - padding));
+    resultR = round(easeInOutSine(i, 0, 20, 0, 20));
+    // resultX = round(map(i, 0, 20, 0, SCREEN_WIDTH - padding));
+    // resultY = round(map(i, 0, 20, 0, SCREEN_HEIGHT - padding));
+    // resultR = round(map(i, 0, 20, 0, 20));
+    // Draw the rectangle
+    display.fillRoundRect((SCREEN_WIDTH - resultX) / 2, (SCREEN_HEIGHT - resultY) / 2, resultX, resultY, resultR, WHITE);
+    delay(5);
+    display.display();
+    delay(10);
+    }
+    delay(500);
+    // Draw a tick in the middle
+    display.drawBitmap((SCREEN_WIDTH - 32) / 2, (SCREEN_HEIGHT - 32) / 2, epd_bitmap_download, 32, 32, BLACK);
+    display.display();
+    delay(1500);
+    // Set to black screen
+    display.clearDisplay(); 
+    display.display();
+}
+
+// This function is similar to the built-in map() function, but with a eased curve at the start and the end of the range.
+// Similar to the ease-in-out function in CSS
+float easeInOutSine(int _x, int inputLow, int inputHigh, int lowerBound, int higherBound) {
+    int inputRange = inputHigh - inputLow - 1;
+    float convX = ((float)_x - (float)inputLow) / (float)inputRange;
+    // Serial.print(String(convX) + "; ");
+    int range = higherBound - lowerBound;
+    float result = (-(cos(PI * convX) - 1.0) / 2.0) * range + lowerBound;
+    // Serial.println(result);
+    return result;
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="content dark1" id="actual-operation">
+            <div class="title">
+                <h3>Actual Operation</h3>
+                <div class="subtitle">Coming alive</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A5/ezgif-4-6526b04375.gif" class="media" onclick='openLightbox("lightbox4");'></img>
+            </div>
+            <div class="lightbox-expand" id="lightbox3" onclick='closeLightbox("lightbox4");' style="display: none;">
+                <img src="static/A5/ezgif-4-6526b04375.gif" class="media"></img>
+            </div>
+            <p>
+                The above gif shows how this program run. The screen will first display a Mitsubishi logo for two seconds. 
+                Then it will display the current value of the rotary encoder, starting from 0. The user can rotate the knob 
+                clockwise to increase the value or counter-clockwise to decrease. Values won't change when reaching the 0 ~ 40 limit. 
+                Below the value is a small indicator that will also change its position based on the value. When reached the limit, 
+                if the user still rotates in that direction, small dashes appear beside the indicator to remind the users to stop.
+            </p>
+            <p>
+                Using the switch, a user can set the current value to the fan connected to the motor. with 0 being still and 40 being the max speed. 
+                Max speed is set so that the fan won't rotate too fast but still has a decent speed.
+            </p>
+            <p>
+                There are also code about a confirmation screen with a simple animation, but the motor is introducing too much noise to the system so any fast animation will freeze the arduino. 
+                So the animation is disabled for this assignment.
+            </p>
+        </div>
+
+        <button onclick="scrollToTop()" id="topBtn" title="Go to top">
+            <span class="material-icons">
+                arrow_upward
+            </span>
+        </button>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+    </body>
+    
+</html>
