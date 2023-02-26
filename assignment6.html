@@ -1,0 +1,543 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+    <head> 
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+        <title>Assignment 5</title> 
+
+        <link href="style/style.css" media="screen" rel="stylesheet" type="text/css" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Forum&family=Josefin+Sans:ital,wght@0,100;0,400;1,100;1,400&family=Raleway:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        <script src="script/index.js"></script>
+        <script src="script/lightbox.js"></script>
+    </head> 
+    <body> 
+        <nav>
+            <h4 class="top-title">HCDE 439</h4>
+            <div class="nav-list">
+                <a class="nav-items" href="index.html">Home</a>                <div class="dropdown">
+                    <a href="#">Assignments</a>
+                    <div class="dropdown-content">
+                        <a class="nav-items" href="assignment1.html">Assignment 1</a>
+                        <a class="nav-items" href="assignment2.html">Assignment 2</a>
+                        <a class="nav-items" href="assignment3.html">Assignment 3</a>
+                        <a class="nav-items" href="assignment4.html">Assignment 4</a>
+                        <a class="nav-items" href="assignment5.html">Assignment 5</a>
+                        <a class="nav-items" href="assignment6.html">Assignment 6</a>
+                    </div>
+                </div>
+                <a class="nav-items" href="#">About</a>
+            </div>
+        </nav>
+
+        <div class="dark1">
+            <h2>Assignment 6 -- Talk to the "Web"</h2>
+            <p>
+                Arduino Communicates with the "Web" 
+            </p>
+        </div>
+
+        <div class="content bright1" id="schematic">
+            <div class="title">
+                <h3>Schematic</h3>
+                <div class="subtitle">Treasure Maps</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A6/A6_schem.png" class="media" onclick='openLightbox("lightbox0");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox0");' id="lightbox0" style="display: none;">
+                <img src="static/A6/A6_schem.png" class="media">
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A6/A6_bb.svg" class="media" onclick='openLightbox("lightbox1");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox1");' id="lightbox1" style="display: none;">
+                <img src="static/A6/A6_bb.svg" class="media">
+            </div>
+            <p>
+                The images above are my schematic for assignment 6. There is a 128 * 64 OLED display and a rotary encoder module. 
+                The OLED display have its SCL(SCK) pin connected to pin A5, and SDA pin connected to pin A4 of the Arduino. 
+                The rotary encoder has its DT pin to pin 3, and CLK pin to pin 2 of the Arduino. I'm not using the SW(switch) pin, 
+                according to the data sheet, it don't have to be connected. Another switch is connected to pin 8 of the Arduino.
+            </p>
+            <h4>Better Power Supply</h4>
+            <p>
+                The IIC bus communicates rapidly with the arduino, if there are noise, sometimes the Arduino behaves weirdly or freezes. To compensate for that, 
+                I put a 22pF capacitor between the power rails of the arduino, the capacitors can ease the fluctuation of the power on the breadboard.
+            </p>
+            <h4>Better I2C Bus Performance</h4>
+            <p>
+                According to the web, two 4.7k ~ 10k Ohm resistors are required to pull-up the SCK(SCL) and SDA lines in the I2C bus. These resistors can let to better performance and more resistance to noises. I chose two 5.1k Ohm resistors that are available in the kit.  
+            </p>
+        </div>
+
+        <div class="content dark2" id="circuit">
+            <div class="title">
+                <h3>Circuit</h3>
+                <div class="subtitle">Above the blueprint</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A6/PXL_20230226_033808897.jpg" class="media" onclick='openLightbox("lightbox3");'>
+            </div>
+            <div class="lightbox-expand" onclick='closeLightbox("lightbox3");' id="lightbox2" style="display: none;">
+                <img src="static/A6/PXL_20230226_033808897.jpg" class="media">
+            </div>
+            <p>
+                The above image shows the actual Arduino circuit build on breadboard. Note the transistor parts on the bottom right is not used in this assignment.
+            </p>
+        </div>
+        
+        <div class="content bright2" id="firmware">
+            <div class="title">
+                <h3>Firmware</h3>
+                <div class="subtitle">Inside the chips</div>
+            </div>
+            <h4>Arduino Code</h4>
+            <div class="code-wrapper">
+                <pre><code class="arduino">#include &lt;SPI.h>
+#include &lt;Wire.h>
+#include &lt;Adafruit_GFX.h>
+#include &lt;Adafruit_SSD1306.h>
+#include &lt;Encoder.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+#define SW_PIN 8 // Encoder Switch pin to 8
+
+// A Mitsubishi Logo to display
+// 'images', 48x48px
+const unsigned char epd_bitmap_images [] PROGMEM = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 
+    0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x03, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x03, 0xc0, 0x00, 0x00, 
+    0x00, 0x00, 0x07, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x0f, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x0f, 0xf0, 
+    0x00, 0x00, 0x00, 0x00, 0x1f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x1f, 0xf8, 0x00, 0x00, 0x00, 0x00, 
+    0x3f, 0xfc, 0x00, 0x00, 0x00, 0x00, 0x7f, 0xfc, 0x00, 0x00, 0x00, 0x00, 0x7f, 0xfe, 0x00, 0x00, 
+    0x00, 0x00, 0xff, 0xfe, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x7f, 0xfe, 
+    0x00, 0x00, 0x00, 0x00, 0x7f, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x3f, 0xfc, 0x00, 0x00, 0x00, 0x00, 
+    0x3f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x1f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x1f, 0xf0, 0x00, 0x00, 
+    0x00, 0x00, 0x0f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x07, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x07, 0xc0, 
+    0x00, 0x00, 0x00, 0x00, 0x03, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x03, 0x80, 0x00, 0x00, 0x00, 0x00, 
+    0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xfe, 0xff, 0xff, 0x00, 
+    0x01, 0xff, 0xfe, 0x7f, 0xff, 0x00, 0x01, 0xff, 0xfc, 0x3f, 0xff, 0x80, 0x03, 0xff, 0xfc, 0x3f, 
+    0xff, 0xc0, 0x07, 0xff, 0xf8, 0x1f, 0xff, 0xc0, 0x07, 0xff, 0xf0, 0x1f, 0xff, 0xe0, 0x0f, 0xff, 
+    0xf0, 0x0f, 0xff, 0xe0, 0x0f, 0xff, 0xe0, 0x0f, 0xff, 0xf0, 0x1f, 0xff, 0xe0, 0x07, 0xff, 0xf8, 
+    0x1f, 0xff, 0xc0, 0x03, 0xff, 0xf8, 0x3f, 0xff, 0xc0, 0x03, 0xff, 0xfc, 0x7f, 0xff, 0x80, 0x01, 
+    0xff, 0xfe, 0x7f, 0xff, 0x00, 0x01, 0xff, 0xfe, 0x7f, 0xff, 0x00, 0x00, 0xff, 0xfe, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
+// A tick to display
+// 'download', 32x32px
+const unsigned char epd_bitmap_download [] PROGMEM = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x38, 0x00, 0x00, 0x00, 0x7e, 0x00, 0x00, 0x00, 0x7f, 
+    0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x01, 0xfe, 0x00, 0x00, 0x01, 0xfe, 0x00, 0x00, 0x03, 0xfc, 
+    0x00, 0x00, 0x07, 0xf8, 0x00, 0x00, 0x07, 0xf8, 0x00, 0x00, 0x0f, 0xf0, 0x00, 0x00, 0x1f, 0xe0, 
+    0x00, 0x00, 0x1f, 0xe0, 0x00, 0x00, 0x3f, 0xc0, 0x00, 0x00, 0x7f, 0x80, 0x18, 0x00, 0xff, 0x80, 
+    0x3c, 0x00, 0xff, 0x00, 0x7e, 0x01, 0xfe, 0x00, 0xff, 0x01, 0xfe, 0x00, 0xff, 0x83, 0xfc, 0x00, 
+    0x7f, 0xc7, 0xf8, 0x00, 0x3f, 0xef, 0xf8, 0x00, 0x1f, 0xff, 0xf0, 0x00, 0x0f, 0xff, 0xe0, 0x00, 
+    0x07, 0xff, 0xe0, 0x00, 0x03, 0xff, 0xc0, 0x00, 0x01, 0xff, 0x80, 0x00, 0x00, 0xff, 0x80, 0x00, 
+    0x00, 0x7f, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
+int oldPos = 0;
+int currPos = -20;
+int currVal;
+bool swStatus;
+// Half of the total level the knob can adjust (-20 to +20)
+const int KNOB_LEVEL_HALF = 20;
+int knobExceed = 0;
+int currExceed = 0;
+// Connect to pin 2 and pin 3, only two pins with interrupt ability to ensure max performance
+Encoder myEnc(2, 3);
+
+// This function composes a JSON string that includes both the raw encoder value and the processed value and send it to P5.js
+void updateSerial() {
+    Serial.print("[");
+    Serial.print(currVal);
+    Serial.print(",");
+    Serial.print(myEnc.read());
+    Serial.println("]");
+}
+
+void updateInfoScreen(bool forceUpdate = false) {
+    // Read from the rotary encoder
+    currPos = posConv(myEnc.read());
+    // Curr value is from 0 to 40
+    currVal = currPos + 20; 
+    // Enter if converted position changed or Exceeding status changed
+    if (currPos != oldPos || currExceed != knobExceed || forceUpdate) {
+    oldPos = currPos;
+    // Set currExceed same as knobExceed
+    currExceed = knobExceed;
+    
+    // Clear previous content
+    display.clearDisplay();
+    // Set text size
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    // Set cursor to the upper left corner
+    display.setCursor(0, 0);
+    // Display content
+    display.print("Value: ");
+
+    // Move cursor
+    display.setCursor(64, 0);
+    // Set text to be inverted color
+    display.setTextColor(BLACK, WHITE);
+    display.println(String(currVal));
+
+    drawIndicator(currPos);
+
+    display.display();
+    }
+}
+
+void setup() {
+    Serial.begin(115200);
+    // Pin 8 as the switch detect pin is set to INPUT, and when it's low it is depressed
+    pinMode(SW_PIN, INPUT);
+    myEnc.write(-KNOB_LEVEL_HALF * 4 - 2);
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    // Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+    }
+    // Clear the screen
+    display.clearDisplay();
+    // Display Logo
+    display.drawBitmap(
+    (display.width()  - 48) / 2,
+    (display.height() - 48) / 2,
+    epd_bitmap_images, 48, 48, 1
+    );
+    display.display();
+    delay(2000);
+    display.clearDisplay();
+    
+    delay(1000);
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    // Set cursor to the upper left corner
+    display.setCursor(0, 0);
+    display.print("Value: ");
+
+    // Move cursor
+    display.setCursor(64, 0);
+    // Set text to be inverted color
+    display.setTextColor(BLACK, WHITE);
+    currVal = currPos + 20; 
+    display.println(String(currVal));
+    drawIndicator(currPos);
+    display.display();
+}
+
+void loop() {
+    updateInfoScreen();
+    swStatus = digitalRead(SW_PIN);
+    // The switch is active low, which means when it is depressed it becomes LOW
+    if (!swStatus) {
+    delay(50);
+    // Debounce here
+    if (!digitalRead(SW_PIN)) {
+        drawConfirmScreen();
+    
+        updateInfoScreen(true);
+        delay(5);
+        // Sent current position to p5
+        updateSerial();
+        delay(5);
+    }
+
+    }
+
+    // If there are data from P5.js
+    if (Serial.available() > 0) {
+    // Read data
+    int inByte = Serial.read();
+    // Write the value to the encoder by reverting it
+    myEnc.write(inByte * 4 - 80);
+    // Force update the screen with new value
+    updateInfoScreen(true);
+    // Send the updated value to P5.js
+    updateSerial();
+    }
+
+}
+
+int posConv(long inputPos) {
+    // Serial.println(inputPos);
+    int result;
+    // Result is position divided by four since the knob clicks every four turns
+    result = (int)(round((inputPos) / 4.0));
+    // Serial.println(result);
+    if (result > KNOB_LEVEL_HALF) {
+    // Knob value exceeds max value
+    result = KNOB_LEVEL_HALF;
+    // Set knob value to max to prevent further increase 
+    myEnc.write(KNOB_LEVEL_HALF * 4 + 2);
+    knobExceed = 1;
+    }
+    else if (result < -KNOB_LEVEL_HALF) {
+    // Knob value exceeds min value
+    result = -KNOB_LEVEL_HALF;
+    // Set knob value to min to prevent further decrease 
+    myEnc.write(-KNOB_LEVEL_HALF * 4 - 2);
+    knobExceed = -1;
+    }
+    else {
+    knobExceed = 0;
+    }
+    // Serial.println(knobExceed);
+    return result;
+}
+
+void drawIndicator(int inputPos) {
+    int _width = 2;
+    int _height = 16;
+    int _x;
+    int _y = 40;
+    int padding = 8;
+
+    // calculate indicator's position from input position value
+    _x = map(inputPos, -KNOB_LEVEL_HALF, KNOB_LEVEL_HALF, padding, SCREEN_WIDTH - padding);
+    _x = floor(_x - _width / 2);
+
+    // Draw a straight line as the slider
+    display.drawLine(padding, _y, SCREEN_WIDTH - padding, _y, WHITE);
+
+    // Draw a rectangle as the indicator
+    display.fillRoundRect(_x, floor(_y - (_height / 2)), _width, _height, 1, WHITE);
+
+    // Draw three dashes
+    if (knobExceed == 1) {
+    // Knob is turning too high
+    display.drawLine(SCREEN_WIDTH - padding + 2, floor(_y - _height / 4), SCREEN_WIDTH - padding + 4, floor(_y - _height / 4), WHITE);
+    display.drawLine(SCREEN_WIDTH - padding + 2, _y, SCREEN_WIDTH - padding + 4, _y, WHITE);
+    display.drawLine(SCREEN_WIDTH - padding + 2, floor(_y + _height / 4), SCREEN_WIDTH - padding + 4, floor(_y + _height / 4), WHITE);
+    }
+    else if (knobExceed == -1) {
+    // Knob is turning too low
+    display.drawLine(padding - 2, floor(_y - _height / 4), padding - 4, floor(_y - _height / 4), WHITE);
+    display.drawLine(padding - 2, _y, padding - 4, _y, WHITE);
+    display.drawLine(padding - 2, floor(_y + _height / 4), padding - 4, floor(_y + _height / 4), WHITE);
+    }
+}
+
+void drawConfirmScreen() {
+    // Clear buffer
+    display.clearDisplay();
+    // Play 20 frames of the animation
+    int iteration = 20;
+    int padding = 2;
+    int resultX;
+    int resultY;
+    int resultR;
+
+    // Draw a enlarging rounded rectangle here
+    for (int i = 0; i < iteration; i++) {
+    display.clearDisplay();
+    // Calculate W, H, and radius of the rectangle
+    resultX = round(easeInOutSine(i, 0, 20, 0, SCREEN_WIDTH - padding));
+    resultY = round(easeInOutSine(i, 0, 20, 0, SCREEN_HEIGHT - padding));
+    resultR = round(easeInOutSine(i, 0, 20, 0, 20));
+    // resultX = round(map(i, 0, 20, 0, SCREEN_WIDTH - padding));
+    // resultY = round(map(i, 0, 20, 0, SCREEN_HEIGHT - padding));
+    // resultR = round(map(i, 0, 20, 0, 20));
+    // Draw the rectangle
+    display.fillRoundRect((SCREEN_WIDTH - resultX) / 2, (SCREEN_HEIGHT - resultY) / 2, resultX, resultY, resultR, WHITE);
+    delay(5);
+    display.display();
+    delay(10);
+    }
+    delay(500);
+    // Draw a tick in the middle
+    display.drawBitmap((SCREEN_WIDTH - 32) / 2, (SCREEN_HEIGHT - 32) / 2, epd_bitmap_download, 32, 32, BLACK);
+    display.display();
+    delay(1500);
+    // Set to black screen
+    display.clearDisplay(); 
+    display.display();
+}
+
+// This function is similar to the built-in map() function, but with a eased curve at the start and the end of the range.
+// Similar to the ease-in-out function in CSS
+float easeInOutSine(int _x, int inputLow, int inputHigh, int lowerBound, int higherBound) {
+    int inputRange = inputHigh - inputLow - 1;
+    float convX = ((float)_x - (float)inputLow) / (float)inputRange;
+    // Serial.print(String(convX) + "; ");
+    int range = higherBound - lowerBound;
+    float result = (-(cos(PI * convX) - 1.0) / 2.0) * range + lowerBound;
+    // Serial.println(result);
+    return result;
+}</code></pre>
+            </div>
+            <h4>P5.js Code</h4>
+            <div class="code-wrapper">
+                <pre><code class="javascript">let serial; // variable to hold an instance of the serialport library
+let portName = 'COM5'; //rename to the name of your port
+let dataArr = [0, 0];
+
+let button;
+let knobVal = 0;
+
+let n0 = "#2E3440";
+let n1 = "#3B4252";
+let n2 = "#434C5E";
+let n3 = "#4C566A";
+let n4 = "#D8DEE9";
+let n5 = "#E5E9F0";
+let n6 = "#ECEFF4";
+
+let slider;
+let sliderVal;
+
+function setup() {
+    serial = new p5.SerialPort();       // make a new instance of the serialport library
+    serial.on('list', printList);       // set a callback function for the serialport list event
+    serial.on('connected', serverConnected); // callback for connecting to the server
+    serial.on('open', portOpen);        // callback for the port opening
+    serial.on('data', serialEvent);     // callback for when new data arrives
+    serial.on('error', serialError);    // callback for errors
+    serial.on('close', portClose);      // callback for the port closing
+    
+    console.log("muffin");
+    serial.list();                      // list the serial ports
+    serial.open(portName, {baudRate: 115200});          // open a serial port
+    createCanvas(1920, 1080);
+
+    background(n0);
+    button = createButton('Update Knob Value');
+    button.position(16, 106);
+    button.mousePressed(changeBG);
+    
+    slider = createSlider(0, 40, 0);
+    slider.position(16, 64);
+    slider.style('width', '160px');
+}
+
+// get the list of ports:
+function printList(portList) {
+    // portList is an array of serial port names
+    for (let i = 0; i < portList.length; i++) {
+    // Display the list the console:
+    print(i + " " + portList[i]);
+    }
+}
+
+function serverConnected() {
+    print('connected to server.');
+}
+
+function portOpen() {
+    print('the serial port opened.')
+}
+
+function serialError(err) {
+    print('Something went wrong with the serial port. ' + err);
+}
+
+function portClose() {
+    print('The serial port closed.');
+}
+
+function serialEvent() {
+    if (serial.available()) {
+        // Read data
+        let rawData = serial.readLine();
+        let jsonArr; 
+
+        try {
+            // Parse the json string
+            jsonArr = JSON.parse(rawData);
+            if (typeof jsonArr == 'object') {
+                dataArr = jsonArr;
+                // Update slider value based on input
+                slider.value(dataArr[0]);
+            }
+            console.log("got back " + rawData);
+        } catch(err) {
+            console.log(err);
+        }
+    } 
+}
+
+function draw() {
+    clear();
+    // Dark gray background
+    background(n0);
+    fill(n1);
+    stroke(n3);
+    // Round rectangle with a stroke
+    rect(16, 24, 240, 32, 20)
+    fill(n6);
+    textSize(16)
+    // Display raw knob value and processed knob value
+    text("Knob Value: " + dataArr[0] + ", raw value: " + dataArr[1], 24, 46);
+
+    // Read slider value
+    sliderVal = slider.value();
+    // Display the slider value that moves with the slider handle
+    text(sliderVal, sliderVal * 3.5 + 16 + 4, 96);
+}
+
+function changeBG() {
+    console.log("Button clicked " + sliderVal);
+    // Write the slider value to the Arduino
+    serial.write(sliderVal);
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="content dark1" id="actual-operation">
+            <div class="title">
+                <h3>Actual Operation</h3>
+                <div class="subtitle">Coming alive</div>
+            </div>
+            <div class="lightbox-preview">
+                <img src="static/A6/ezgif-3-a02eba153d.gif" class="media" onclick='openLightbox("lightbox4");'></img>
+            </div>
+            <div class="lightbox-expand" id="lightbox3" onclick='closeLightbox("lightbox4");' style="display: none;">
+                <img src="static/A6/ezgif-3-a02eba153d.gif" class="media"></img>
+            </div>
+            <p>
+                The above gif shows how this program run. The screen will first display a Mitsubishi logo for two seconds. 
+                Then it will display the current value of the rotary encoder, starting from 0. The user can rotate the knob 
+                clockwise to increase the value or counter-clockwise to decrease. Values won't change when reaching the 0 ~ 40 limit. 
+                Below the value is a small indicator that will also change its position based on the value. When reached the limit, 
+                if the user still rotates in that direction, small dashes appear beside the indicator to remind the users to stop.
+            </p>
+            <p>
+                On the P5.js "web" screen, there is a textbox showing the current knob value and the unprocessed knob value. Below is a slider with range 0 to 20. 
+                Below that, there is a "Update Knob Value" button that can update the value of the knob and display it on the Arduino.
+            </p>
+            <p>
+                Using the switch, a user can set the current value and display it on the P5.js "web" screen. The user can also slide the slider on the "web" and click the "Update Knob Value" on the "web" 
+                to update the value on the Arduino. On the "webpage", both the unprocessed rotary encoder value and the processed value are shown so users can check how the values are calculated. 
+                This is achieved by letting the Arduino send a JSON like string and let the P5.js server parse the string to get two values.
+            </p>
+        </div>
+
+        <button onclick="scrollToTop()" id="topBtn" title="Go to top">
+            <span class="material-icons">
+                arrow_upward
+            </span>
+        </button>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+    </body>
+    
+</html>
+""
