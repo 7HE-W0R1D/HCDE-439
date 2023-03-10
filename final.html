@@ -216,16 +216,16 @@
                 <div class="subtitle">Treasure Maps</div>
             </div>
             <figure class="lightbox-preview">
-                <img src="static/Final/Final_schem.png" class="media" onclick='openLightbox("lightbox0");'>
+                <img src="static/Final/final_schem.png" class="media" onclick='openLightbox("lightbox0");'>
             </figure>
             <div class="lightbox-expand" onclick='closeLightbox("lightbox0");' id="lightbox0" style="display: none;">
-                <img src="static/Final/Final_schem.png" class="media">
+                <img src="static/Final/final_schem.png" class="media">
             </div>
             <figure class="lightbox-preview">
-                <img src="static/Final/Final_bb.svg" class="media" onclick='openLightbox("lightbox1");'>
+                <img src="static/Final/final_bb.svg" class="media" onclick='openLightbox("lightbox1");'>
             </figure>
             <div class="lightbox-expand" onclick='closeLightbox("lightbox1");' id="lightbox1" style="display: none;">
-                <img src="static/Final/Final_bb.svg" class="media">
+                <img src="static/Final/final_bb.svg" class="media">
             </div>
             <p>
                 My schematic is similar to my assignment 4, which also features the Arduino, an OLED screen, a button, and a rotary encoder. However, there are also a couple of differences.  The biggest change is the MCU, which I changed from an Arduino UNO to an Arduino Pro Micro Type-C. Since it’s a different board, the wiring changed. The IIC bus is on pin 2 and pin 3 for the Arduino Pro Micro. They are connected, instead of the A4 and A5 on the UNO, to the OLED screen, along with two 5.1K Ohm pull-up resistors. Another change is that a Panasonic EVQ-V5B00215B hollow rotary encoder replaced the rotary encoder module included in the kit. According to its datasheet, I included 4 * 10k Ohm resistors and 2 * 0.01uF capacitors to allow it to properly function. There's also a 22pF capacitor between the VCC and the GND pin to ease out spikes in currents.
