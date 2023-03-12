@@ -230,6 +230,11 @@
             <p>
                 My schematic is similar to my assignment 4, which also features the Arduino, an OLED screen, a button, and a rotary encoder. However, there are also a couple of differences.  The biggest change is the MCU, which I changed from an Arduino UNO to an Arduino Pro Micro Type-C. Since it’s a different board, the wiring changed. The IIC bus is on pin 2 and pin 3 for the Arduino Pro Micro. They are connected, instead of the A4 and A5 on the UNO, to the OLED screen, along with two 5.1K Ohm pull-up resistors. Another change is that a Panasonic EVQ-V5B00215B hollow rotary encoder replaced the rotary encoder module included in the kit. According to its datasheet, I included 4 * 10k Ohm resistors and 2 * 0.01uF capacitors to allow it to properly function. There's also a 22pF capacitor between the VCC and the GND pin to ease out spikes in currents.
             </p>
+            <h4>Header Pin as Reset Button</h4>
+            <p>
+                Sometimes the Arduino becomes unresponsive when uploading code. The official solution is to hold reset button then uploading. However, to keep the size of my PCB, I cannot fit a button and a resistor. I replaced them with a simple 2 pin header connector. 
+                When I need the reset button, I can connect the header pins to a button on a breadboard.
+            </p>
             <h4>Better Power Supply</h4>
             <p>
                 The IIC bus communicates rapidly with the arduino, if there are noise, sometimes the Arduino behaves weirdly or freezes. To compensate for that, 
