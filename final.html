@@ -1,29 +1,35 @@
 <!DOCTYPE html> 
-<html lang="en"> 
+<html lang="en" style="font-size: 16px"> 
     <head> 
         <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
 
         <title>Final Project</title> 
 
-        <link href="style/style.css" media="screen" rel="stylesheet" type="text/css" />
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Forum&family=Josefin+Sans:ital,wght@0,100;0,400;1,100;1,400&family=Raleway:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
-        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
         <script src="script/index.js"></script>
         <script src="script/lightbox.js"></script>
+
+        <link href="style/style.css" media="screen" rel="stylesheet" type="text/css" />
     </head> 
     <body> 
         <nav>
             <h4 class="top-title">HCDE 439</h4>
             <div class="nav-list">
-                <a class="nav-items" href="index.html">Home</a>                <div class="dropdown">
+                <a class="nav-items" href="index.html">Home</a>
+                <div class="dropdown" style="padding-top: 2px;">
                     <a href="#">Assignments</a>
+                    <!-- Assignments -->
+                    <!-- <div style="padding-top: 2px;">Assignments</div> -->
                     <div class="dropdown-content">
                         <a class="nav-items" href="assignment1.html">Assignment 1</a>
                         <a class="nav-items" href="assignment2.html">Assignment 2</a>
@@ -37,15 +43,25 @@
             </div>
         </nav>
 
-        <div class="dark1">
-            <h2>Final Project</h2>
-            <p>
-                My Final Project
-            </p>
-            <p>
-                All files used in this project can be assessed here.
-            </p>
-            <p><em><a href="https://github.com/7HE-W0R1D/HCDE-439/tree/master/static/Final" target="_blank">https://github.com/7HE-W0R1D/HCDE-439/tree/master/static/Final</a></em></p>
+        <div class="title dark1" style="padding-bottom:0;">
+            <div class="flex">
+                <div class="info-wrap">
+                    <div>
+                        <h2>Final Project</h2>
+                        <p style="padding-top: 6px;">
+                            My Final Project, a smart knob that controls PC volume and media playback. Build on a PCB fully designed and built by me.
+                        </p>
+                    </div>
+                    <p>
+                        All files used in this project can be assessed here.
+                    </p>
+                    <p><em><a href="https://github.com/7HE-W0R1D/HCDE-439/tree/master/static/Final"
+                                target="_blank">https://github.com/7HE-W0R1D/HCDE-439/tree/master/static/Final</a></em></p>
+  
+                </div>
+                <img src="static/Final/device01_16_9.jpg" width=450 height=400 class="image" alt="arduino picture" style="object-fit: cover;">
+
+            </div>
         </div>
 
         <div class="content bright1" id="proposal">
@@ -83,11 +99,11 @@
                     Wires
                 </li>
                 <li>
-                    Materials for a housing
+                    Materials for a housing (Optional)
                 </li>
             </ul>
 
-            <h4>
+            <!-- <h4>
                 Timeline and Contingency Plans
             </h4>
             <ul>
@@ -106,7 +122,7 @@
                 <li>
                     If anything goes wrong, delay it by 2 days max
                 </li>
-            </ul>
+            </ul> -->
         </div>
          
         <div class="content dark1" id="concept">
